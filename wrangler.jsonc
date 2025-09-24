@@ -9,7 +9,30 @@
 	"compatibility_date": "2025-09-23",
 	"observability": {
 		"enabled": true
-	}
+	},
+	"d1_databases": [
+    {
+      "binding": "prod_daily_logs",
+      "database_name": "prod-daily-logs",
+      "database_id": "2f39fcb5-1f49-4c5a-9058-b290e34382f8"
+    }
+  ],
+  	"durable_objects": {
+		"bindings": [
+		{
+			"name": "USER_SESSION",
+			"class_name": "UserSession"
+		}
+		]
+  },
+
+	"migrations": [
+		{
+		"tag": "v1",
+		"new_classes": ["UserSession"]
+		}
+	]
+	
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
