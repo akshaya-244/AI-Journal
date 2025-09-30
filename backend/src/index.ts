@@ -196,38 +196,29 @@ export default {
 				// Initialize RAG pipeline with journal logs
 				const ragPipeline = new RAGPipeline(journalLogs);
 				
-				// Test the new approach: top 3 semantic + top 2 keyword
-				const semanticResults = await ragPipeline.performSemanticSearch(body.query, 3);
-				const keywordResults = await ragPipeline.performKeywordSearch(body.query, 2);
-				const combinedResults = ragPipeline.combineSearchResults(semanticResults, keywordResults);
-				
-				// Also test hybrid for comparison
+				// Test all search types
+				const keywordResults = await ragPipeline.performKeywordSearch(body.query, 5);
+				const semanticResults = await ragPipeline.performSemanticSearch(body.query, 5);
 				const hybridResults = await ragPipeline.performHybridSearch(body.query, 5);
 				
-				// Prepare context for AI using combined results
-				const context = combinedResults.slice(0, 5).map((result, index) => 
-					`${index + 1}. **${result.date} (${result.day})** - ${result.searchType || 'combined'} - Relevance: ${((result.similarity_score || result.keyword_score || result.hybrid_score || 0) * 100).toFixed(0)}%\n   "${result.text}"`
+				// Prepare context for AI (same as in real search)
+				const context = hybridResults.slice(0, 5).map((result, index) => 
+					`${index + 1}. **${result.date} (${result.day})** - Relevance: ${((result.similarity_score || result.keyword_score || result.hybrid_score || 0) * 100).toFixed(0)}%\n   "${result.text}"`
 				).join('\n\n');
 				
 				return new Response(JSON.stringify({
 					success: true,
 					query: body.query,
 					totalEntries: journalLogs.length,
-					newApproach: {
-						semanticResults: {
-							count: semanticResults.length,
-							results: semanticResults
-						},
-						keywordResults: {
-							count: keywordResults.length,
-							results: keywordResults
-						},
-						combinedResults: {
-							count: combinedResults.length,
-							results: combinedResults
-						}
+					keywordResults: {
+						count: keywordResults.length,
+						results: keywordResults
 					},
-					oldHybridResults: {
+					semanticResults: {
+						count: semanticResults.length,
+						results: semanticResults
+					},
+					hybridResults: {
 						count: hybridResults.length,
 						results: hybridResults
 					},

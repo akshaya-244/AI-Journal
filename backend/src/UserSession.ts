@@ -163,12 +163,8 @@ class UserSession{
                 // Initialize RAG pipeline with user's journal logs
                 const ragPipeline = new RAGPipeline(journalLogs);
                 
-                // Get top 3 semantic search results and top 2 keyword search results
-                const semanticResults = await ragPipeline.performSemanticSearch(body.query, 3);
-                const keywordResults = await ragPipeline.performKeywordSearch(body.query, 2);
-                
-                // Combine results, prioritizing semantic but including unique keyword results
-                const searchResults = ragPipeline.combineSearchResults(semanticResults, keywordResults);
+                // Always use hybrid search for best results
+                const searchResults = await ragPipeline.performHybridSearch(body.query, 5);
 
                 // Generate AI-powered contextual answer (200 words max)
                 const answer = await ragPipeline.generateAIAnswer(body.query, searchResults, this.env);

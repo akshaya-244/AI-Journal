@@ -14,7 +14,6 @@ export interface SearchResult extends JournalEntry {
   similarity_score?: number;
   keyword_score?: number;
   hybrid_score?: number;
-  searchType?: 'semantic' | 'keyword' | 'hybrid';
 }
 
 export class RAGPipeline {
@@ -288,30 +287,6 @@ export class RAGPipeline {
   }
 
   /**
-   * Combine semantic and keyword search results, avoiding duplicates
-   */
-  combineSearchResults(semanticResults: SearchResult[], keywordResults: SearchResult[]): SearchResult[] {
-    const resultMap = new Map<string, SearchResult>();
-    
-    // Add semantic results first (prioritize them)
-    semanticResults.forEach(result => {
-      const key = `${result.date}_${result.text.substring(0, 50)}`;
-      resultMap.set(key, { ...result, searchType: 'semantic' });
-    });
-    
-    // Add keyword results if they don't already exist
-    keywordResults.forEach(result => {
-      const key = `${result.date}_${result.text.substring(0, 50)}`;
-      if (!resultMap.has(key)) {
-        resultMap.set(key, { ...result, searchType: 'keyword' });
-      }
-    });
-    
-    // Return combined results (up to 5 total)
-    return Array.from(resultMap.values()).slice(0, 5);
-  }
-
-  /**
    * Generate an AI-powered contextual answer based on search results
    */
   async generateAIAnswer(query: string, searchResults: SearchResult[], env: any): Promise<string> {
@@ -328,12 +303,12 @@ export class RAGPipeline {
 
     const prompt = `You are analyzing REAL journal entries from a user's personal diary. The user asked: "${query}"
 
-Here are the EXACT journal entries I found in their database (top 3 semantic matches + top 2 keyword matches, avoiding duplicates):
+Here are the EXACT journal entries I found in their database:
 
 ${context}
 
 IMPORTANT: Only analyze these specific entries. Do NOT make up, invent, or reference any other entries. Do NOT use examples from other people's journals.
-Dont show these entries in your answer. Just give the summary.
+
 Provide a thoughtful summary of ONLY these entries in relation to the user's query. Focus on:
 - Key patterns and themes in these specific entries
 - Meaningful observations about their experiences
