@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-
+export const runtime = 'edge';        // required by Cloudflare Pages
+export const dynamic = 'force-dynamic';
 const handler = NextAuth({
   providers: [
     GoogleProvider({
