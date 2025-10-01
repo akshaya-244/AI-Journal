@@ -44,6 +44,8 @@ export default {
           picture?: string | null;
         }>();
 
+		console.log("Logging in user:", body);
+
         await env.prod_daily_logs
           .prepare(
             `INSERT OR REPLACE INTO users (id, email, name, picture, updated_at) 
@@ -51,7 +53,9 @@ export default {
           )
           .bind(body.userId, body.email, body.name, body.picture ?? null)
           .run();
-
+		
+		  console.log("User authenticated and database updated");
+		  
         return new Response(
           JSON.stringify({
             success: true,
