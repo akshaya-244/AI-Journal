@@ -18,6 +18,19 @@ class UserSession{
 
         console.log('UserSession received:', method, url.pathname, 'userId:', userId, 'action:', action);
 
+        // CORS headers
+        const corsHeaders = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+            'Access-Control-Max-Age': '86400',
+        };
+
+        // Handle OPTIONS preflight request
+        if (method === 'OPTIONS') {
+            return new Response(null, { headers: corsHeaders });
+        }
+
         if(method === "POST" && action === 'add'){
             console.log('Processing POST /add request');
             
@@ -59,7 +72,10 @@ class UserSession{
                     entries: this.entries,
                     message: 'Entry saved successfully'
                 }), {
-                    headers: {"Content-type": "application/json"}
+                    headers: {
+                        ...corsHeaders,
+                        "Content-Type": "application/json"
+                    }
                 });
 
             } catch (error: any) {
@@ -70,7 +86,10 @@ class UserSession{
                     details: error.message
                 }), {
                     status: 500,
-                    headers: {"Content-type": "application/json"}
+                    headers: {
+                        ...corsHeaders,
+                        "Content-Type": "application/json"
+                    }
                 });
             }
         }
@@ -98,7 +117,10 @@ class UserSession{
                     }));
                     
                     return new Response(JSON.stringify(formattedEntries), {
-                        headers: {"Content-type": "application/json"}
+                        headers: {
+                            ...corsHeaders,
+                            "Content-Type": "application/json"
+                        }
                     });
                 }
             } catch (error) {
@@ -108,7 +130,10 @@ class UserSession{
             // Fallback to memory entries if database fails
             console.log('Falling back to memory entries:', this.entries.length);
             return new Response(JSON.stringify(this.entries), {
-                headers: {"Content-type": "application/json"}
+                headers: {
+                    ...corsHeaders,
+                    "Content-Type": "application/json"
+                }
             });
         }
 
@@ -149,7 +174,10 @@ class UserSession{
                         answer: 'No journal entries found for this user. Start journaling to see search results!',
                         message: 'No journal entries found for this user'
                     }), {
-                        headers: {"Content-type": "application/json"}
+                        headers: {
+                            ...corsHeaders,
+                            "Content-Type": "application/json"
+                        }
                     });
                 }
         
@@ -175,7 +203,10 @@ class UserSession{
                     answer: answer,
                     totalEntries: journalLogs.length
                 }), {
-                    headers: {"Content-type": "application/json"}
+                    headers: {
+                        ...corsHeaders,
+                        "Content-Type": "application/json"
+                    }
                 });
         
             } catch (error: any) {
@@ -186,14 +217,18 @@ class UserSession{
                     details: error.message
                 }), {
                     status: 500,
-                    headers: {"Content-type": "application/json"}
+                    headers: {
+                        ...corsHeaders,
+                        "Content-Type": "application/json"
+                    }
                 });
             }
         }
 
         console.log('Route not found:', method, url.pathname);
         return new Response("Not found", {
-            status: 404
+            status: 404,
+            headers: corsHeaders
         });
     }
 }
