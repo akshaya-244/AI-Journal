@@ -13,20 +13,23 @@ const handler = NextAuth({
       // Automatically create user in your database when they sign in
       if (account?.provider === 'google' && user) {
         try {
-          const backendUrl = "https://ai-journal-api.akshayamohan-2401.workers.dev/"
-          
-          await fetch(`${backendUrl}/auth/login`, {
+          const backendUrl = "https://ai-journal-api.akshayamohan-2401.workers.dev/auth/login"
+          console.log("Creating user in database:", user)
+          const userResponse = await fetch(`${backendUrl}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              userId: user.id || user.email,
+              userId: user.email,
               email: user.email,
               name: user.name,
               picture: user.image,
             }),
           })
+          // Read the response body as text
+          const responseData = await userResponse.text()
+          console.log("User created in database:", responseData)
         } catch (error) {
           console.error('Failed to create user in database:', error)
           // Don't block sign-in if database creation fails
