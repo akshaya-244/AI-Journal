@@ -3,7 +3,7 @@ import Google from 'next-auth/providers/google'
 
 // Note: NextAuth may have compatibility issues with Edge Runtime on Cloudflare Pages
 // If you encounter issues, consider using Node.js runtime instead
-export const runtime = 'nodejs';        // required by Cloudflare Pages
+export const runtime = 'edge';        // required by Cloudflare Pages
 export const dynamic = 'force-dynamic';
 
 const handler = NextAuth({
