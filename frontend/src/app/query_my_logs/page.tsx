@@ -84,7 +84,7 @@ export default function QueryMyLogs() {
       }
 
       // Call the search API
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://journal-logs.akshayamohan-2401.workers.dev'}/session/${encodeURIComponent(userId)}/search`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://ai-journal-api.akshayamohan-2401.workers.dev'}/session/${encodeURIComponent(userId)}/search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
